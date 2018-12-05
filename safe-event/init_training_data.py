@@ -318,7 +318,7 @@ def gen_word_safe_multi_conv_data(path='safe-event/safe-event.txt', max_len = 50
                 data['label'] = label
                 res.append(json.dumps(data, ensure_ascii=False) + '\n')
 
-    with open('safe-event/word-multi-conv-big.json', 'w') as f:
+    with open('safe-event/word-multi-conv-big.txt', 'w') as f:
         f.writelines(res)
 
 def gen_binary_eng_wiki_multi_conv_data(path='eng-event/wiki_sentence.txt', max_len=80):

@@ -78,17 +78,18 @@ def gen_neg_json_from_txt(max_len = 50):
                 index = sen_arr.index(s)
                 lexical = sen_arr[max(0, index - 1): index + 2]
                 if lexical.index(s) < 1:
-                    lexical = ['P'] + lexical
+                    lexical = ['0'] + lexical
                 if len(lexical) < 3:
-                    lexical = lexical + ['P'] * (3 - len(lexical))
+                    lexical = lexical + ['0'] * (3 - len(lexical))
 
                 lexical = ' '.join(lexical)
                 label = 0
 
                 data = {}
                 # index = [str(index)] * max_len
-                position = np.zeros(max_len)
-                position[index] = 1
+                position = np.zeros(len(sen_arr))
+                for i in range(len(sen_arr)):
+                    position[i] = i - index
                 data['candidate'] = s
                 data['sen'] = ' '.join(sen_arr)
                 data['lexical'] = lexical
@@ -99,44 +100,6 @@ def gen_neg_json_from_txt(max_len = 50):
         f.writelines(res)
 
 
-def gen_word_safe_multi_conv_data(path='safe-event/safe-event.txt', max_len = 50):
-    '''
-    multi-pooling convolution需要的训练数据
-    :param path:
-    :param max_len:
-    :return:
-    '''
-    res = []
-    with open(path) as f:
-        for line in f:
-            data = json.loads(line)
-            trigger = data['trigger']
-            sen_arr = list(jieba.cut(data['sentence']))
-
-            if trigger not in sen_arr or sen_arr.index(trigger) >= max_len:#分词有问题 或 长度超了
-                continue
-            for s in sen_arr:
-                index = sen_arr.index(s)
-                lexical = sen_arr[max(0, index - 1): index + 2]
-                if lexical.index(s) < 1:
-                    lexical = ['P'] + lexical
-                if len(lexical) < 3:
-                    lexical = lexical + ['P'] * (3 - len(lexical))
-
-                lexical = ' '.join(lexical)
-                label = 1 if s == trigger else 0
-
-                data = {}
-                index = [str(index)] * max_len
-                data['candidate'] = s
-                data['sen'] = ' '.join(sen_arr)
-                data['lexical'] = lexical
-                data['position'] = ' '.join(index)
-                data['label'] = label
-                res.append(json.dumps(data, ensure_ascii=False) + '\n')
-
-    with open('safe-event/word-multi-conv-big.json', 'w') as f:
-        f.writelines(res)
 
 def test_load_safe_event():
     with open('safe-event.txt') as f:

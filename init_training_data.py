@@ -302,17 +302,17 @@ def gen_word_safe_multi_conv_data(path='safe-event/safe-event.txt', max_len = 50
                 index = sen_arr.index(s)
                 lexical = sen_arr[max(0, index - 1): index + 2]
                 if lexical.index(s) < 1:
-                    lexical = ['P'] + lexical
+                    lexical = ['0'] + lexical
                 if len(lexical) < 3:
-                    lexical = lexical + ['P'] * (3 - len(lexical))
+                    lexical = lexical + ['0'] * (3 - len(lexical))
 
                 lexical = ' '.join(lexical)
                 label = 1 if s == trigger else 0
 
                 data = {}
-                # index = [str(index)] * max_len
-                position = np.zeros(max_len)
-                position[index] = 1
+                position = np.zeros(len(sen_arr))
+                for i in range(len(sen_arr)):
+                    position[i] = i - index
                 data['candidate'] = s
                 data['sen'] = ' '.join(sen_arr)
                 data['lexical'] = lexical
@@ -320,7 +320,7 @@ def gen_word_safe_multi_conv_data(path='safe-event/safe-event.txt', max_len = 50
                 data['label'] = label
                 res.append(json.dumps(data, ensure_ascii=False) + '\n')
 
-    with open('safe-event/word-multi-conv-big.json', 'w') as f:
+    with open('safe-event/word-multi-conv-big.txt', 'w') as f:
         f.writelines(res)
 
 def gen_binary_eng_wiki_multi_conv_data(path='eng-event/wiki_sentence.txt', max_len=80):
